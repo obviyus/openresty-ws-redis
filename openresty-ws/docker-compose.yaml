@@ -1,0 +1,32 @@
+version: '3'
+services:
+    openresty:
+        image: openresty/openresty:alpine
+        ports:
+            - "8080:8080"
+        depends_on:
+            - redis
+        volumes:
+            - ./conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf
+        networks:
+            - default
+
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        networks:
+            - default
+    
+    ws:
+        # No need to expose gameserver, connections will be proxied through openresty
+        image: ksdn117/web-socket-test:latest
+        depends_on:
+            - redis
+        networks:
+            - default
+
+networks: 
+    default:
+        driver: bridge
+
